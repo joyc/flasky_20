@@ -7,6 +7,7 @@ from flask_moment import Moment
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'add SECRET_KEY for Flask-WTF'
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 
