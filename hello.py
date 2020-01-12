@@ -1,14 +1,18 @@
+from datetime import datetime
 from flask import Flask
 from flask import request
 from flask import render_template
 from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
+moment = Moment(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', current_time=datetime.utcnow())
 
 def top():
     return "<h2>Ni hao Flask世界！<br> 我是%s</h2>" % "言言"
