@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from threading import Thread
 from flask import Flask
 from flask import request
 from flask import render_template
@@ -30,7 +31,6 @@ moment = Moment(app)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['FLASKY_MAIL_SUBJECT_PREFIX'] = '[Flasky20]'
@@ -38,13 +38,20 @@ app.config['FLASKY_MAIL_SENDER'] = 'Flasky20 Admin <PyBee0@gmail.com>'
 app.config['FLASKY20_ADMIN'] = os.environ.get('FLASKY20_ADMIN')
 mail = Mail(app)
 
+# 发信
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
 
+# 多线程异步发信
 def send_email(to, subject, template, **kwargs):
     msg = Message(app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + ' ' + subject, \
                   sender=app.config['FLASKY_MAIL_SENDER'], recipients=[to])
     msg.body = render_template(template + '.txt', **kwargs)
     msg.html = render_template(template + '.html', **kwargs)
-    mail.send(msg)
+    thr = Thread(target=send_async_email, args=[app, msg])
+    thr.start()
+    return thr
 
 @app.shell_context_processor
 def make_shell_context():
