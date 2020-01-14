@@ -7,6 +7,7 @@ from flask import session, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -21,6 +22,7 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'add SECRET_KEY for Flask-WTF'
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 
