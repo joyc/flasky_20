@@ -19,7 +19,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @staticmethod
-    def init_app():
+    def init_app(app):
         pass
 
 
@@ -30,7 +30,8 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
-    TESTING = True SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
                                              'sqlite://'
 
 
