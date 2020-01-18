@@ -3,10 +3,9 @@
 # @File   : models.py
 # @Author : Hython
 # @Date   : 公元 2020/01/14 22:51
-from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import login_manager
-
+from flask_login import UserMixin
+from . import db, login_manager
 
 # 需要获取已登录用户的信息时调用
 @login_manager.user_loader
@@ -24,12 +23,13 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
-    password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    password_hash = db.Column(db.String(128))
 
     @property
     def password(self):
