@@ -5,6 +5,13 @@
 # @Date   : 公元 2020/01/14 22:51
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from . import login_manager
+
+
+# 需要获取已登录用户的信息时调用
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class Role(db.Model):

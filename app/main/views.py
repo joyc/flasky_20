@@ -10,6 +10,7 @@ from ..models import User
 from ..email import send_email
 from . import main
 from .forms import NameForm
+from flask_login import login_required
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -30,3 +31,9 @@ def index():
         return redirect(url_for('.index'))
     return render_template('index.html', form=form, name=session.get('name'),
                            known=session.get('known', False), current_time=datetime.utcnow())
+
+
+@main.route('/secret')
+@login_required
+def secret():
+    return 'Only authenticated users are allowed!'
