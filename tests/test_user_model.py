@@ -77,5 +77,5 @@ class UserModelTestCase(unittest.TestCase):
         db.session.add(u)
         db.session.commit()
         token = u.generate_reset_token()
-        self.assertFalse(User.reset_password(token + 'a', 'horse'))
+        self.assertFalse(User.reset_password(token, 'horse'))
         self.assertTrue(u.verify_password('cat'))
