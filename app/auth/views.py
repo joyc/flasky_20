@@ -120,13 +120,12 @@ def password_reset_request():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user:
             token = user.generate_reset_token()
-            send_email(user.email, 'Reset Your Password', 
+            send_email(user.email, 'Reset Your Password',
                        'auth/email/reset_password',
                        user=user, token=token)
-            flash('An email with instructions to reset your password has been '
-              'sent to you.')
-            return redirect(url_for('auth.login'))
-        return render_template('auth/reset_password.html', form=form)
+        flash('An email with instructions to reset your password has been sent to you.')
+        return redirect(url_for('auth.login'))
+    return render_template('auth/reset_password.html', form=form)
 
 
 @auth.route('/reset/<token>', methods=['GET', 'POST'])
@@ -155,9 +154,19 @@ def change_email_request():
             send_email(new_email, 'Confirm your email address',
                        'auth/email/change_email',
                        user=current_user, token=token)
-            flash('An email with instructions to confirm your new email '
-                  'address has been sent to you.')
+            flash('An email with instructions to confirm your new email address has been sent to you.')
             return redirect(url_for('main.index'))
         else:
             flash('Invalid email or password.')
-        return render_template("auth/change_email.html", form=form)
+    return render_template("auth/change_email.html", form=form)
+
+
+@auth.route('/change_email/<token>')
+@login_required
+def change_email(token):
+    if current_user.change_email(token):
+        db.session.commit()
+        flash('Your email address has been updated.')
+    else:
+        flash('Invalid request.')
+    return redirect(url_for('main.index'))
