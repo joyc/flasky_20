@@ -58,7 +58,7 @@ class Role(db.Model):
     def insert_roles():
         roles = {
             'User': [Permission.FOLLOW, Permission.COMMENT, Permission.WRITE],
-            'Moderator': [Permission.FOLLOW, Permission.COMMENT, Permission.WRITE
+            'Moderator': [Permission.FOLLOW, Permission.COMMENT, Permission.WRITE,
                           Permission.MODERATE],
             'Administrator': [Permission.FOLLOW, Permission.COMMENT, Permission.WRITE,
                               Permission.MODERATE, Permission.ADMIN]
@@ -84,6 +84,16 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        # 定义默认的用户角色
+        if self.role is None:
+            if self.role is None:
+                if self.email == current_app.config['FLASKY_ADMIN']:
+                    self.role = Role.query.filter_by(name='Administrator').first()
+                if self.role is None:
+                    self.role = Role.query.filter_by(default=True).first()
 
     @property
     def password(self):
