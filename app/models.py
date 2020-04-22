@@ -6,7 +6,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
-from flask_login import UserMixin
+from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
 
 
@@ -95,6 +95,14 @@ class User(UserMixin, db.Model):
                 if self.role is None:
                     self.role = Role.query.filter_by(default=True).first()
 
+    def can(self, perm):
+        """检查用户是否有指定权限"""
+        return self.role is not None and self.role.has_permission(perm)
+
+    def is_administrator(self):
+        """判断是否有管理员权限"""
+        return self.can(Permission.ADMIN)
+
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
@@ -167,3 +175,14 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+class AnonymousUser(AnonymousUserMixin):
+    def can(self, permission):
+        return False
+
+    def is_administrator(self):
+        return False
+
+
+login_manager.anonymous_user = AnonymousUser
