@@ -10,12 +10,6 @@ from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
 
 
-# 需要获取已登录用户的信息时调用
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
 class Permission:
     FOLLOW = 1
     COMMENT = 2
@@ -203,3 +197,8 @@ class AnonymousUser(AnonymousUserMixin):
 
 
 login_manager.anonymous_user = AnonymousUser
+
+# 需要获取已登录用户的信息时调用
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
