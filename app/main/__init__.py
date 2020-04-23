@@ -8,3 +8,10 @@ from flask import Blueprint
 main = Blueprint('main', __name__)
 # 把路由和错误处理程序与蓝本关联
 from . import views, errors
+
+
+# Permission类加入模板上下文
+from ..models import Permission
+@main.app_context_processor
+def inject_permission():
+    return dict(Permission=Permission)
