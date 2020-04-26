@@ -16,12 +16,14 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
 # 注册全局请求钩子
 @auth.before_app_request
 def before_request():
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
+    if current_user.is_authenticated:
+        # refresh user's last login time
+        current_user.ping()
+        if not current_user.confirmed \
             and request.endpoint \
             and request.endpoint[:5] != 'auth.' \
             and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
+            return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')
